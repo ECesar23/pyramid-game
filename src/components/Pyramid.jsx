@@ -57,15 +57,26 @@ export default function Pyramid({ state, cardReveal, onLeave }) {
 
   // ── Render helpers ───────────────────────────────────────────────────────────
 
-  const PyramidGrid = () => (
-    <div className="pyramid-wrap">
+  const PyramidGrid = () => {
+    const floors = pyramid.length;
+    const vw = typeof window !== 'undefined' ? window.innerWidth : 400;
+    const available = Math.min(vw - 24, 456);
+    const gap = floors > 10 ? 3 : floors > 7 ? 4 : 6;
+    const cardW = Math.max(20, Math.min(52, Math.floor((available - (floors - 1) * gap) / floors)));
+    const cardH = Math.round(cardW * 72 / 52);
+    const cardFs = `${Math.max(0.45, (cardW / 52) * 1.1).toFixed(2)}rem`;
+    return (
+    <div className="pyramid-wrap" style={{ gap }}>
       {pyramid.map((row, rowIdx) => (
-        <div key={rowIdx} className="pyramid-row">
+        <div key={rowIdx} className="pyramid-row" style={{ gap }}>
           {row.map((card, colIdx) => {
             const isCurrent = currentCard?.floor === rowIdx && currentCard?.col === colIdx;
             return (
               <div key={colIdx} className="pyramid-card-wrap">
-                <div className={`playing-card pyramid-card ${card.revealed ? 'revealed' : ''} ${isCurrent ? 'current' : ''}`}>
+                <div
+                  className={`playing-card pyramid-card ${card.revealed ? 'revealed' : ''} ${isCurrent ? 'current' : ''}`}
+                  style={{ width: cardW, height: cardH, fontSize: cardFs }}
+                >
                   {card.revealed ? card.value : ''}
                   <span className="pos-label">{rowIdx + 1}🍺</span>
                 </div>
@@ -75,7 +86,8 @@ export default function Pyramid({ state, cardReveal, onLeave }) {
         </div>
       ))}
     </div>
-  );
+    );
+  };
 
   const MyCards = ({ clickable }) => (
     <div className="my-cards-section">

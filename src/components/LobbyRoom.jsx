@@ -9,6 +9,7 @@ export default function LobbyRoom({ state, onLeave }) {
 
   const totalCards = players.length * 4 + pyramidCardCountClient(settings.floors);
   const canStart = players.length >= 2 && totalCards <= 52;
+  const maxFloors = Math.max(2, Math.floor((-1 + Math.sqrt(1 + 8 * (52 - players.length * 4))) / 2));
 
   function copyCode() {
     navigator.clipboard.writeText(code).then(() => {
@@ -86,7 +87,7 @@ export default function LobbyRoom({ state, onLeave }) {
               <button
                 className="btn btn-ghost"
                 style={{ width: 36, height: 36, padding: 0, fontSize: '1.1rem', borderRadius: '50%' }}
-                onClick={() => updateSetting('floors', Math.min(7, settings.floors + 1))}
+                onClick={() => updateSetting('floors', Math.min(maxFloors, settings.floors + 1))}
               >+</button>
             </div>
           </div>

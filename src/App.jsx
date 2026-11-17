@@ -82,7 +82,7 @@ export default function App() {
       return <Memorize state={gameState} />;
 
     case 'pyramid':
-      return <Pyramid state={gameState} cardReveal={cardReveal} />;
+      return <Pyramid state={gameState} cardReveal={cardReveal} onLeave={handleLeave} />;
 
     case 'recitation':
       return <Recitation state={gameState} />;

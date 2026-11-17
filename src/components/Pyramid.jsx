@@ -3,7 +3,7 @@ import { socket } from '../socket';
 import EventLog from './EventLog';
 
 // ── Pyramid component – the main game screen ─────────────────────────────────
-export default function Pyramid({ state, cardReveal }) {
+export default function Pyramid({ state, cardReveal, onLeave }) {
   const [showAttackModal, setShowAttackModal] = useState(false);
   const [attackError, setAttackError]         = useState('');
 
@@ -183,6 +183,13 @@ export default function Pyramid({ state, cardReveal }) {
       {/* Header */}
       <div className="game-header">
         <span className="room-code-badge">{code}</span>
+        {onLeave && (
+          <button
+            className="btn btn-ghost"
+            style={{ width: 'auto', padding: '4px 10px', fontSize: '0.8rem' }}
+            onClick={onLeave}
+          >Quitter</button>
+        )}
         <div className="scores-row">
           {players.map(p => (
             <div key={p.id} className={`score-chip ${p.isMe ? 'me' : ''}`}>

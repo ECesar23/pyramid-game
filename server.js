@@ -36,7 +36,8 @@ function createRoom(hostId, hostName, settings = {}) {
     hostId,
     phase: 'lobby',
     settings: {
-      floors:            clamp(settings.floors ?? 4, 2, 7),
+      numDecks:          clamp(settings.numDecks ?? 1, 1, 5),
+      floors:            clamp(settings.floors ?? 4, 2, 22),
       memorizeDuration:  clamp(settings.memorizeDuration ?? 3, 2, 10),
       replaceCard:       settings.replaceCard ?? true,
       finalRecitation:   settings.finalRecitation ?? false,
@@ -416,7 +417,11 @@ io.on('connection', socket => {
     const room = findRoomBySocket(socket.id);
     if (!room || room.hostId !== socket.id || room.phase !== 'lobby') return;
     const s = room.settings;
-    if (settings.floors            != null) s.floors            = clamp(settings.floors, 2, 7);
+    if (settings.numDecks          != null) s.numDecks          = clamp(settings.numDecks, 1, 5);
+    if (settings.floors            != null) {
+      const maxF = Math.floor((-1 + Math.sqrt(1 + 8 * (s.numDecks * 52 - room.players.length * 4))) / 2);
+      s.floors = clamp(settings.floors, 2, Math.max(2, maxF));
+    }
     if (settings.memorizeDuration  != null) s.memorizeDuration  = clamp(settings.memorizeDuration, 2, 10);
     if (settings.replaceCard       != null) s.replaceCard       = Boolean(settings.replaceCard);
     if (settings.finalRecitation   != null) s.finalRecitation   = Boolean(settings.finalRecitation);
@@ -428,10 +433,10 @@ io.on('connection', socket => {
     if (!room || room.hostId !== socket.id) return cb({ error: 'Non autorisé' });
     if (room.phase !== 'lobby') return cb({ error: 'Partie déjà lancée' });
     if (room.players.length < 2) return cb({ error: 'Il faut au moins 2 joueurs' });
-    if (!canStartGame(room.players.length, room.settings.floors))
+    if (!canStartGame(room.players.length, room.settings.floors, room.settings.numDecks))
       return cb({ error: `Pas assez de cartes. Réduisez les étages ou le nombre de joueurs.` });
 
-    const deck = shuffle(createDeck());
+    const deck = shuffle(createDeck(room.settings.numDecks));
     let idx = 0;
     for (const p of room.players) {
       p.cards = deck.slice(idx, idx + 4).map(c => ({ value: c.value }));

@@ -2,12 +2,14 @@
 
 const CARD_VALUES = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'V', 'D', 'R'];
 
-function createDeck() {
+function createDeck(numDecks = 1) {
   const deck = [];
-  for (const value of CARD_VALUES) {
-    for (let suit = 0; suit < 4; suit++) deck.push({ value });
+  for (let d = 0; d < numDecks; d++) {
+    for (const value of CARD_VALUES) {
+      for (let suit = 0; suit < 4; suit++) deck.push({ value });
+    }
   }
-  return deck; // 52 cards
+  return deck; // 52 * numDecks cards
 }
 
 function shuffle(arr) {
@@ -24,8 +26,8 @@ function pyramidCardCount(floors) {
   return (floors * (floors + 1)) / 2;
 }
 
-function canStartGame(playerCount, floors) {
-  return playerCount * 4 + pyramidCardCount(floors) <= 52;
+function canStartGame(playerCount, floors, numDecks = 1) {
+  return playerCount * 4 + pyramidCardCount(floors) <= 52 * numDecks;
 }
 
 // Returns { pyramid: [][]{value,revealed}, nextIndex }

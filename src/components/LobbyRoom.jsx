@@ -7,9 +7,10 @@ export default function LobbyRoom({ state, onLeave }) {
   const [error, setError] = useState('');
   const [copied, setCopied] = useState(false);
 
+  const deckCards = (settings.numDecks ?? 1) * 52;
   const totalCards = players.length * 4 + pyramidCardCountClient(settings.floors);
-  const canStart = players.length >= 2 && totalCards <= 52;
-  const maxFloors = Math.max(2, Math.floor((-1 + Math.sqrt(1 + 8 * (52 - players.length * 4))) / 2));
+  const canStart = players.length >= 2 && totalCards <= deckCards;
+  const maxFloors = Math.max(2, Math.floor((-1 + Math.sqrt(1 + 8 * (deckCards - players.length * 4))) / 2));
 
   function copyCode() {
     navigator.clipboard.writeText(code).then(() => {
@@ -74,6 +75,26 @@ export default function LobbyRoom({ state, onLeave }) {
 
           <div className="toggle-row">
             <div>
+              <div style={{ fontWeight: 500 }}>Nombre de paquets</div>
+              <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>{settings.numDecks ?? 1} paquet{(settings.numDecks ?? 1) > 1 ? 's' : ''} · {(settings.numDecks ?? 1) * 52} cartes disponibles</div>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <button
+                className="btn btn-ghost"
+                style={{ width: 36, height: 36, padding: 0, fontSize: '1.1rem', borderRadius: '50%' }}
+                onClick={() => updateSetting('numDecks', Math.max(1, (settings.numDecks ?? 1) - 1))}
+              >−</button>
+              <span style={{ fontWeight: 700, minWidth: 20, textAlign: 'center' }}>{settings.numDecks ?? 1}</span>
+              <button
+                className="btn btn-ghost"
+                style={{ width: 36, height: 36, padding: 0, fontSize: '1.1rem', borderRadius: '50%' }}
+                onClick={() => updateSetting('numDecks', Math.min(5, (settings.numDecks ?? 1) + 1))}
+              >+</button>
+            </div>
+          </div>
+
+          <div className="toggle-row">
+            <div>
               <div style={{ fontWeight: 500 }}>Étages de la pyramide</div>
               <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>{settings.floors} étages · {pyramidCardCountClient(settings.floors)} cartes</div>
             </div>
@@ -134,9 +155,9 @@ export default function LobbyRoom({ state, onLeave }) {
             </label>
           </div>
 
-          <div style={{ marginTop: 8, padding: '8px 0', borderTop: '1px solid var(--border)', fontSize: '0.8rem', color: totalCards > 52 ? 'var(--danger)' : 'var(--text-muted)' }}>
-            Cartes utilisées : {totalCards}/52
-            {totalCards > 52 && ' — trop de joueurs ou d\'étages !'}
+          <div style={{ marginTop: 8, padding: '8px 0', borderTop: '1px solid var(--border)', fontSize: '0.8rem', color: totalCards > deckCards ? 'var(--danger)' : 'var(--text-muted)' }}>
+            Cartes utilisées : {totalCards}/{deckCards}
+            {totalCards > deckCards && ' — trop de joueurs ou d\'étages !'}
           </div>
         </div>
       )}

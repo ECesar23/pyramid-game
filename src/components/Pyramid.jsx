@@ -69,6 +69,7 @@ export default function Pyramid({ state, cardReveal, onLeave }) {
     <div className="pyramid-wrap" style={{ gap }}>
       {pyramid.map((row, rowIdx) => (
         <div key={rowIdx} className="pyramid-row" style={{ gap }}>
+          <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)', minWidth: 28, textAlign: 'right', flexShrink: 0 }}>{rowIdx + 1}🍺</span>
           {row.map((card, colIdx) => {
             const isCurrent = currentCard?.floor === rowIdx && currentCard?.col === colIdx;
             return (
@@ -78,7 +79,6 @@ export default function Pyramid({ state, cardReveal, onLeave }) {
                   style={{ width: cardW, height: cardH, fontSize: cardFs }}
                 >
                   {card.revealed ? card.value : ''}
-                  <span className="pos-label">{rowIdx + 1}🍺</span>
                 </div>
               </div>
             );
